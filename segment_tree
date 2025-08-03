@@ -14,9 +14,9 @@ private:
             return;
         }
         int mid = (l + r) / 2;
-        build(2 * index, l, mid);
-        build(2 * index + 1, mid + 1, r);
-        tree[index] = tree[2 * index] + tree[2 * index + 1];
+        build(2 * index + 1, l, mid);
+        build(2 * index + 2, mid + 1, r);
+        tree[index] = tree[2 * index + 1] + tree[2 * index + 2];
     }
 
     int query(int index, int l, int r, int ql, int qr) {
@@ -24,8 +24,8 @@ private:
         if (ql <= l && r <= qr) return tree[index]; // Total overlap
 
         int mid = (l + r) / 2;
-        int left = query(2 * index, l, mid, ql, qr);
-        int right = query(2 * index + 1, mid + 1, r, ql, qr);
+        int left = query(2 * index + 1, l, mid, ql, qr);
+        int right = query(2 * index + 2, mid + 1, r, ql, qr);
         return left + right;
     }
 
@@ -36,11 +36,11 @@ private:
         }
         int mid = (l + r) / 2;
         if (pos <= mid)
-            update(2 * index, l, mid, pos, val);
+            update(2 * index + 1, l, mid, pos, val);
         else
-            update(2 * index + 1, mid + 1, r, pos, val);
+            update(2 * index + 2, mid + 1, r, pos, val);
 
-        tree[index] = tree[2 * index] + tree[2 * index + 1];
+        tree[index] = tree[2 * index + 1] + tree[2 * index + 2];
     }
 
 public:
@@ -52,11 +52,11 @@ public:
     }
 
     int rangeSum(int l, int r) {
-        return query(1, 0, n - 1, l, r);
+        return query(0, 0, n - 1, l, r);
     }
 
     void updateValue(int pos, int val) {
-        update(1, 0, n - 1, pos, val);
+        update(0, 0, n - 1, pos, val);
     }
 };
 
