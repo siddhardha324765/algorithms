@@ -1,0 +1,83 @@
+
+    void parent(vector<vector<int>>&adj,vector<int>&level,vector<vector<int>>&dp){ //used to find level of node in tree
+         int l=0;
+         vector<bool>flag(adj.size());
+        queue<int>q;
+        q.push(1);
+        flag[1] =true;
+        while(!q.empty()){
+            int s =q.size();
+            for(int i=0;i<s;i++){
+                int node =q.front();
+                q.pop();
+                level[node] = l;
+                for(int j=0;j<adj[node].size();j++){
+                    if(!flag[adj[node][j]]){
+                        dp[adj[node][j]][0]=node;
+                        flag[adj[node][j]] =true;
+                    q.push(adj[node][j]);
+                    }
+                }
+            }
+            l++;
+        }
+    }
+    // construct the binary lift table
+    void table(vector<vector<int>>&dp){
+          for(int k=1;k<20;k++){
+        for(int i=1;i<dp.size();i++){
+            if(dp[i][k-1]!=-1){
+            dp[i][k]=dp[dp[i][k-1]][k-1];
+            }
+        }
+        }
+    }
+
+    // to find kth ancestor of a node
+    int getKthAncestor(vector<vector<int>>&dp,int node, int k) {
+        int cnt=0;
+        while(k!=0){
+         if(k%2==1){
+            node  = dp[node][cnt];
+            if(node == -1){
+                return -1;
+            }  
+         }
+         k=k/2;
+         cnt++;
+        }
+      return node;
+    }
+
+    // to find lowest common ancestor for two different nodes
+    int find_common_ancester(vector<vector<int>>&dp,vector<int>&level,int node1,int node2){
+      if(level[node1]>level[node2]){
+        int k=level[node1]-level[node2];
+        node1 = getKthAncestor(dp,node1,k);
+      }
+       if(level[node1]<level[node2]){
+        int k=level[node2]-level[node1];
+        node2 = getKthAncestor(dp,node2,k);
+      }
+      while(node1!=node2){
+        int n1=node1;
+        int n2=node2;
+        for(int k=0;k<20;k++){
+            if(dp[node1][k]!=dp[node2][k]){
+                n1 =dp[node1][k];
+                n2=dp[node2][k];
+            }
+            else{
+                if(k==0){
+                    return dp[node1][k];
+                }
+                else{
+                    node1=n1;
+                    node2=n2;
+                    break;
+                }
+            }
+        }
+      }
+      return node1;
+    }
