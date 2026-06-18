@@ -1,0 +1,27 @@
+vector<int>parent;
+vector<int>rank;
+
+    int up(int node){
+        if(parent[node]==node){
+            return node;
+        }
+        return parent[node] = up(parent[node]);
+    }
+
+    void union_by_parent(int node1,int node2){
+        int p1 = up(node1);
+        int p2 = up(node2);
+        if(p1 == p2){
+            return ;
+        }
+        else if(rank[p1] == rank[p2]){
+            parent[p2] = p1;
+            rank[p1]++;
+        }
+        else if(rank[p1] < rank[p2]){
+            parent[p1] = p2;
+        }
+        else{
+             parent[p2] = p1;
+        }
+    }
