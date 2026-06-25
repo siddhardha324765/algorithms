@@ -1,0 +1,99 @@
+#include <bits/stdc++.h>
+using namespace std;
+ struct node{
+        long long sum;
+        long long pre;
+        long long suf;
+        long long total;
+        node(long long val=0){
+            sum = val;
+            pre = val;
+            suf = val;
+            total = val;
+        }
+    };
+  node merge(node & l,node & r){
+      node a;
+      a.sum = l.sum + r.sum;
+      a.pre = max(l.pre,l.sum+r.pre);
+      a.suf = max(r.suf,r.sum + l.suf);
+      a.total = max({l.total,r.total,l.suf+r.pre});
+      return a;
+      
+  }
+class segment{
+    public:
+    vector<node>seg;
+       segment(vector<long long>nums){
+           int n=nums.size();
+           seg.resize(4*n +1);
+           build(0,0,n-1,nums);
+       }
+       void build(int ind,int s,int e,vector<long long>&nums){
+           if(s==e){
+               seg[ind] = node(nums[s]);
+               return ;
+           }
+           int mid = (s+e)/2;
+           build(ind*2 +1,s,mid,nums);
+           build(ind*2 +2,mid+1,e,nums);
+           seg[ind]=merge(seg[ind*2 +1],seg[ind*2 +2]);
+       }
+       void update(int ind,int s,int e,int pos,int val){
+           if(s==e){
+               seg[ind] = node(val);
+               return ;
+           }
+           int mid = (s+e)/2;
+           if(pos<=mid){
+               update(ind*2 +1,s,mid,pos,val);
+           }
+           else{
+               update(ind*2 +2,mid+1,e,pos,val);
+           }
+             seg[ind]=merge(seg[ind*2 +1],seg[ind*2 +2]);
+       }
+       node query(int ind,int s,int e,int ql,int qr){
+           if(ql<=s and e<=qr){
+               return seg[ind];
+           }
+           int mid = (s+e)/2;
+           if(qr<=mid){
+               return query(ind*2 +1,s,mid,ql,qr);
+           }
+           if(ql>mid){
+               return query(ind*2 +2,mid+1,e,ql,qr);
+           }
+           node l = query(ind*2 +1,s,mid,ql,qr);
+           node r=query(ind*2 +2,mid+1,e,ql,qr);
+           return merge(l,r);
+       }
+};
+
+int main() {
+	// your code goes here
+	int n,q;
+	cin>>n>>q;
+	vector<long long>nums(n);
+	for(int i=0;i<n;i++){
+	    cin>>nums[i];
+	}
+	segment seg(nums);
+	while(q--){
+	    int t;
+	    cin>>t;
+	    if(t==1){
+	        long long l,r;
+	        cin>>l>>r;
+	        seg.update(0,0,n-1,l-1,r);
+	    }
+	    else{
+	        long long l,r;
+	        cin>>l>>r;
+	        long long ans = seg.query(0,0,n-1,l-1,r-1).pre;
+	        ans = max(ans,0ll);
+	        cout<<ans<<endl;
+	    }
+	}
+	
+}
