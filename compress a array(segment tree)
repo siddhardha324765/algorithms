@@ -1,0 +1,20 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> compress(vector<int> &a) {
+    vector<int> b = a;
+
+    // 1. sort
+    sort(b.begin(), b.end());
+
+    // 2. remove duplicates
+    b.erase(unique(b.begin(), b.end()), b.end());
+
+    // 3. replace each element with its index
+    for (int i = 0; i < a.size(); i++) {
+        a[i] = lower_bound(b.begin(), b.end(), a[i]) - b.begin() + 1;
+        // +1 if you want 1-based indexing (recommended for BIT/Segment Tree)
+    }
+
+    return a; // compressed array
+}
